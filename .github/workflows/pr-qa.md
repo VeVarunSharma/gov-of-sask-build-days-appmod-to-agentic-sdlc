@@ -27,8 +27,7 @@ tools:
   github:
     mode: local
     toolsets: [pull_requests, actions]
-    allowed-repos:
-      - ${{ github.repository }}
+    allowed-repos: public
     allowed:
       - name: get_pull_request
         max-calls: 2

@@ -29,8 +29,7 @@ tools:
   github:
     mode: local
     toolsets: [actions]
-    allowed-repos:
-      - ${{ github.repository }}
+    allowed-repos: public
     allowed:
       - name: actions_get
         max-calls: 6

@@ -27,8 +27,7 @@ tools:
   github:
     mode: local
     toolsets: [issues]
-    allowed-repos:
-      - ${{ github.repository }}
+    allowed-repos: public
     allowed:
       - name: issue_read
         max-calls: 1
