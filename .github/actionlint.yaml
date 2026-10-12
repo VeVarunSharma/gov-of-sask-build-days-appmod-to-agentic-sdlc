@@ -1,0 +1,4 @@
+self-hosted-runner:
+  # GitHub-hosted public-preview label not yet recognized by actionlint v1.7.7.
+  labels:
+    - ubuntu-slim
