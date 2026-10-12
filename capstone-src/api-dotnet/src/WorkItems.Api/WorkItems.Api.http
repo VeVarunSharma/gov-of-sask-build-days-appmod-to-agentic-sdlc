@@ -1,0 +1,20 @@
+@host = http://localhost:8081
+
+GET {{host}}/health
+Accept: application/json
+
+###
+
+GET {{host}}/api/work-items
+Accept: application/json
+
+###
+
+POST {{host}}/api/work-items
+Content-Type: application/json
+
+{
+  "title": "Adapt the starter",
+  "description": "Rename WorkItem for the capstone domain",
+  "status": "todo"
+}

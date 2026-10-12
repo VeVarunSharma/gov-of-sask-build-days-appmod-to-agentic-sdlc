@@ -1,0 +1,143 @@
+openapi: 3.1.0
+info:
+  title: Work Items API
+  version: 1.0.0
+  description: Shared contract implemented by the Java and .NET capstone APIs.
+servers:
+  - url: http://localhost:8080
+    description: Spring Boot
+  - url: http://localhost:8081
+    description: ASP.NET Core
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      responses:
+        "200":
+          description: Service is ready.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+  /api/work-items:
+    get:
+      operationId: listWorkItems
+      responses:
+        "200":
+          description: All work items, ordered by creation time.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkItem"
+    post:
+      operationId: createWorkItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkItemRequest"
+      responses:
+        "201":
+          description: Work item created.
+          headers:
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkItem"
+        "400":
+          description: Invalid request.
+  /api/work-items/{id}:
+    parameters:
+      - $ref: "#/components/parameters/WorkItemId"
+    get:
+      operationId: getWorkItem
+      responses:
+        "200":
+          description: Work item found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkItem"
+        "404":
+          description: Work item not found.
+    put:
+      operationId: updateWorkItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkItemRequest"
+      responses:
+        "200":
+          description: Work item updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkItem"
+        "400":
+          description: Invalid request.
+        "404":
+          description: Work item not found.
+    delete:
+      operationId: deleteWorkItem
+      responses:
+        "204":
+          description: Work item deleted.
+        "404":
+          description: Work item not found.
+components:
+  parameters:
+    WorkItemId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    Health:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          const: ok
+    WorkItemStatus:
+      type: string
+      enum: [todo, in_progress, done]
+    WorkItemRequest:
+      type: object
+      additionalProperties: false
+      required: [title, status]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: [string, "null"]
+          maxLength: 2000
+        status:
+          $ref: "#/components/schemas/WorkItemStatus"
+    WorkItem:
+      allOf:
+        - $ref: "#/components/schemas/WorkItemRequest"
+        - type: object
+          required: [id, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
