@@ -15,9 +15,10 @@ agent layer, and writable only through quota-limited safe outputs.
 
 Generated lock files must be produced by `gh aw version v0.89.21`, not edited
 by hand. Conventional `ci-*.yml` workflows must remain byte-for-byte unchanged.
-The teaching repository uses the `COPILOT_GITHUB_TOKEN` secret authentication
-path so its pinned conventional `actionlint` version can validate generated
-locks; production organizations may prefer `copilot-requests: write`.
+The teaching repository uses the recommended `copilot-requests: write`
+permission and short-lived GitHub Actions token. The actionlint configuration
+contains one narrow compatibility exception because actionlint v1.7.x does not
+yet recognize that public-preview permission.
 
 ## Design review
 

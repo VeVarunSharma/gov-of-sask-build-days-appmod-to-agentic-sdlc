@@ -10,6 +10,7 @@ on:
 permissions:
   contents: read
   issues: read
+  copilot-requests: write
 concurrency:
   job-discriminator: ${{ github.event.issue.number || inputs.item_number || github.run_id }}
 engine: copilot

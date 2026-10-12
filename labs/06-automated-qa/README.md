@@ -57,8 +57,9 @@ Install that release only if it is not already available:
 gh extension install github/gh-aw --pin v0.89.21
 ```
 
-The teaching repository uses the `COPILOT_GITHUB_TOKEN` secret authentication
-path documented in Lab 05. Do not store a token in a file or workflow source.
+The teaching repository uses the short-lived `copilot-requests: write`
+authentication path documented in Lab 05. No personal Copilot token is stored
+in a file, workflow source, or repository secret.
 
 ## 3. Read the PR QA workflow
 

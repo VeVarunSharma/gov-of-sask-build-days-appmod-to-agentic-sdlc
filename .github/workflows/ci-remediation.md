@@ -12,6 +12,7 @@ on:
 permissions:
   contents: read
   actions: read
+  copilot-requests: write
 concurrency:
   job-discriminator: ${{ github.event.inputs.run_id }}
 engine: copilot

@@ -11,6 +11,7 @@ permissions:
   contents: read
   actions: read
   pull-requests: read
+  copilot-requests: write
 concurrency:
   job-discriminator: ${{ github.event.pull_request.number }}
 engine: copilot

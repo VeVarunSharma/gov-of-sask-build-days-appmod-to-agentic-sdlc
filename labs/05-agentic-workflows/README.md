@@ -32,17 +32,10 @@ gh extension install github/gh-aw --pin v0.89.21
 gh aw --version
 ```
 
-These workflows use the supported PAT authentication path so the repository's
-pinned conventional YAML linter can parse every generated permission scope.
-Create a fine-grained user token with **Copilot Requests: read**, then store it
-without committing it:
-
-```powershell
-gh aw secrets set COPILOT_GITHUB_TOKEN
-```
-
-Organizations with centralized Copilot billing can instead adopt the preferred
-`copilot-requests: write` permission in a reviewed follow-up change.
+These workflows use the recommended `copilot-requests: write` permission. Each
+run receives a short-lived GitHub Actions token for Copilot inference, so no
+personal access token or `COPILOT_GITHUB_TOKEN` repository secret is required.
+Billing and availability follow the repository owner's Copilot policy.
 
 If the extension already exists, update it only as a deliberate maintenance
 change, then recompile and review all generated differences:
@@ -66,8 +59,8 @@ The YAML frontmatter between `---` markers is compiled configuration. The
 Markdown below it is the agent's durable instruction. Identify:
 
 1. explicit triggers and authorized actor roles;
-2. read-only agent permissions and Copilot authentication via the
-   `COPILOT_GITHUB_TOKEN` repository secret;
+2. read-only repository permissions plus `copilot-requests: write` for
+   short-lived Copilot inference authentication;
 3. scoped tools and network ecosystems;
 4. AI-credit, turn, and timeout limits;
 5. `noop`, `create-issue`, and `create-pull-request` safe outputs; and

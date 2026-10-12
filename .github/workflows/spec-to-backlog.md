@@ -16,6 +16,7 @@ on:
         default: "3"
 permissions:
   contents: read
+  copilot-requests: write
 concurrency:
   job-discriminator: ${{ github.run_id }}
 engine: copilot
