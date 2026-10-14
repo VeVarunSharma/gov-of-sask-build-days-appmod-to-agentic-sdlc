@@ -1,0 +1,53 @@
+name: CI - Agentic workflow consistency
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/*.md"
+      - ".github/workflows/*.lock.yml"
+      - ".github/workflows/ci-gh-aw-consistency.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/*.md"
+      - ".github/workflows/*.lock.yml"
+      - ".github/workflows/ci-gh-aw-consistency.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect agentic workflow sources
+        id: sources
+        shell: bash
+        run: |
+          if find .github/workflows -maxdepth 1 -type f -name '*.md' ! -iname 'README.md' -print -quit | grep -q .; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No agentic workflow Markdown sources exist yet; consistency check skipped."
+          fi
+      - name: Install pinned gh-aw CLI
+        if: steps.sources.outputs.present == 'true'
+        uses: github/gh-aw/actions/setup-cli@c35393777e5604a63721d09512263b1383301d4f # v0.89.21
+        with:
+          version: v0.89.21
+      - name: Compile sources and reject lock-file drift
+        if: steps.sources.outputs.present == 'true'
+        shell: bash
+        run: |
+          gh aw compile
+          if [[ -n "$(git status --porcelain --untracked-files=all -- .github/workflows)" ]]; then
+            git status --short -- .github/workflows
+            echo "::error::Agentic workflow lock files are missing or stale. Run 'gh aw compile' and commit the generated .lock.yml files."
+            exit 1
+          fi

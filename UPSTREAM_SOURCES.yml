@@ -1,0 +1,44 @@
+version: 1
+sources:
+  - id: java-asset-manager
+    repository: https://github.com/Azure-Samples/java-migration-copilot-samples.git
+    revision: 317d3bbfd61fb1e402bea61f90e385bec12f2070
+    source_path: asset-manager
+    destination: legacy-src/java-asset-manager
+    license: MIT
+    license_source_path: asset-manager/LICENSE
+    license_destination: legacy-src/java-asset-manager/LICENSE
+    import_mode: pinned-snapshot
+
+  - id: dotnet-bookcatalog
+    repository: https://github.com/microsoft/dotnet-modernization-for-beginners.git
+    revision: 82585e280fe00d0c56a075bf623dad1622c15911
+    source_paths:
+      - shared-legacy-app
+      - examples/azure
+      - package.json
+      - package-lock.json
+      - dotnet-tools.json
+    destination: legacy-src/dotnet-bookcatalog
+    license: MIT
+    license_source_path: LICENSE
+    license_destination: legacy-src/dotnet-bookcatalog/LICENSE
+    import_mode: pinned-snapshot
+
+  - id: agentic-modernization-workshop
+    repository: https://github.com/Azure-Samples/Agentic-Modernization-Workshop.git
+    revision: b0f3a23697ffbba5184d966f7d47a8d278e31ff1
+    use: Adapted workshop structure and examples; no bulk source snapshot imported.
+    license: MIT
+    license_source_path: LICENSE.md
+
+  - id: github-agentic-workflows
+    repository: https://github.com/github/gh-aw.git
+    revision: 8dfdef53923821f4beb303a02eb00167dec0137c
+    use: Workflow syntax, CLI behavior, and safety patterns; no bulk source snapshot imported.
+    license: MIT
+    license_source_path: LICENSE
+
+excluded_sources:
+  - repository: https://github.com/Azure-Samples/dotnet-migration-copilot-samples.git
+    reason: No explicit reusable license was present at the reviewed revision.

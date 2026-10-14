@@ -1,0 +1,36 @@
+name: CI - Java capstone
+
+on:
+  pull_request:
+    paths:
+      - "capstone-src/api-java/**"
+      - ".github/workflows/ci-java-capstone.yml"
+  push:
+    branches: [main]
+    paths:
+      - "capstone-src/api-java/**"
+      - ".github/workflows/ci-java-capstone.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: capstone-src/api-java
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: capstone-src/api-java/pom.xml
+      - run: mvn -B -ntp test

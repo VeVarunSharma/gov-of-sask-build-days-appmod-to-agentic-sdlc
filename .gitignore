@@ -1,0 +1,16 @@
+# Local tooling and dependency caches
+.impeccable/
+node_modules/
+
+# Build and test output
+bin/
+obj/
+target/
+dist/
+coverage/
+
+# Local IDE and validation artifacts
+.vs/
+*.user
+*.suo
+*.log

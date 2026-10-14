@@ -1,0 +1,11 @@
+self-hosted-runner:
+  # GitHub-hosted public-preview label not yet recognized by actionlint v1.7.7.
+  labels:
+    - ubuntu-slim
+
+paths:
+  .github/workflows/*.lock.yml:
+    ignore:
+      # GitHub supports this public-preview permission, but actionlint v1.7.x
+      # does not yet include it in the permission schema.
+      - 'unknown permission scope "copilot-requests"'

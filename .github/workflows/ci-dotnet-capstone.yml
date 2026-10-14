@@ -1,0 +1,35 @@
+name: CI - .NET capstone
+
+on:
+  pull_request:
+    paths:
+      - "capstone-src/api-dotnet/**"
+      - ".github/workflows/ci-dotnet-capstone.yml"
+  push:
+    branches: [main]
+    paths:
+      - "capstone-src/api-dotnet/**"
+      - ".github/workflows/ci-dotnet-capstone.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Test
+        run: >
+          dotnet test
+          capstone-src/api-dotnet/tests/WorkItems.Api.Tests/WorkItems.Api.Tests.csproj
+          --configuration Release
+          --nologo

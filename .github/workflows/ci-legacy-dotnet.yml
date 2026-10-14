@@ -1,0 +1,49 @@
+name: CI - Legacy .NET Framework baseline
+
+on:
+  pull_request:
+    paths:
+      - "legacy-src/dotnet-bookcatalog/**"
+      - "scripts/validation/validate-dotnet.*"
+      - ".github/workflows/ci-legacy-dotnet.yml"
+  push:
+    branches: [main]
+    paths:
+      - "legacy-src/dotnet-bookcatalog/**"
+      - "scripts/validation/validate-dotnet.*"
+      - ".github/workflows/ci-legacy-dotnet.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build .NET Framework 4.8 with Visual Studio 2022
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure Visual Studio MSBuild
+        uses: microsoft/setup-msbuild@v2
+        with:
+          vs-version: "[17.0,18.0)"
+          msbuild-architecture: x64
+      - name: Configure NuGet
+        uses: NuGet/setup-nuget@v2
+        with:
+          nuget-version: "6.14.0"
+      - name: Restore packages.config dependencies
+        shell: powershell
+        run: >
+          nuget restore
+          "legacy-src\dotnet-bookcatalog\shared-legacy-app\BookCatalog.sln"
+          -PackagesDirectory
+          "legacy-src\dotnet-bookcatalog\shared-legacy-app\packages"
+          -NonInteractive
+      - name: Build imported baseline
+        shell: powershell
+        run: .\scripts\validation\validate-dotnet.ps1 -Configuration Release
