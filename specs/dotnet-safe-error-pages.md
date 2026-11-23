@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Owner:** @mahmedGos (Lab 01, .NET track)
-- **Status:** Approved
+- **Status:** Draft
 - **Source root:** `legacy-src/dotnet-bookcatalog/shared-legacy-app`
 - **Related issue:** Not created
 
@@ -222,17 +222,20 @@ diagnostic-marker search for each probe.
 
 ### AC-10: Diff stays in scope
 
-- **Given** an implementation branch containing the approved specification
-  commit identified in the issue's human review record
-- **When** a reviewer compares that commit with the implementation branch and
-  inspects staged, unstaged, and untracked changes
+- **Given** an implementation branch based on the implementation-baseline
+  commit identified in the issue's execution boundary
+- **When** a reviewer compares that baseline with the implementation branch
+  and inspects staged, unstaged, and untracked changes
 - **Then** only allowed implementation paths appear. The csproj diff contains
   only added `Content Include` items for the new `Views/Shared/` files. No
   generated `App_Data` database files are committed.
-- **Verification:** Set `$approvedSpecCommit` to the approved commit SHA from
-  the issue. Verify it is an ancestor with
-  `git merge-base --is-ancestor $approvedSpecCommit HEAD`; stop if it is not.
-  Review `git diff --name-only $approvedSpecCommit HEAD`,
+- **Verification:** The issue must identify both the reviewed specification
+  commit and a separate implementation-baseline commit containing its approval
+  record. Before implementation, review the specification diff between those
+  commits and stop if it contains changes beyond the approval record. Set
+  `$implementationBaseline` to the baseline SHA from the issue. Verify it is
+  an ancestor with `git merge-base --is-ancestor $implementationBaseline HEAD`;
+  stop if it is not. Review `git diff --name-only $implementationBaseline HEAD`,
   `git diff --name-only`, `git diff --cached --name-only`, and
   `git status --short --untracked-files=all`, along with the actual diffs.
 
@@ -349,11 +352,15 @@ Stop and request human guidance if:
 
 ### Human approval
 
-- [x] I reviewed the evidence, unresolved questions, allowed paths, acceptance
+- [ ] I reviewed the evidence, unresolved questions, allowed paths, acceptance
       criteria, validation command, exclusions, risks, and stop conditions.
-- **Reviewer:** @mahmedGos
-- **Approval date:** 2026-11-23
-- **Approved specification commit:** `783d891545c4fffebaa38360018bc4bb4810ba95`
+- **Reviewer:** Pending review
+- **Approval date:** Pending review
+- **Approved specification commit:** Pending review
+
+The previous specification revision at
+`783d891545c4fffebaa38360018bc4bb4810ba95` was recorded as reviewed by
+@mahmedGos on 2026-11-23. This AC-10 revision requires a new review.
 
 Change **Status** to `Approved` only after the checkbox is selected and the
 reviewer, date, and commit fields are complete. Planning approval authorizes
