@@ -75,10 +75,10 @@ Affected people:
 ### Constraints
 
 - **Allowed paths:**
-  - `legacy-src/dotnet-bookcatalog/shared-legacy-app/src/BookCatalog.Web/Web.config`
-  - `legacy-src/dotnet-bookcatalog/shared-legacy-app/src/BookCatalog.Web/Views/Shared/`:
+    - `legacy-src/dotnet-bookcatalog/shared-legacy-app/src/BookCatalog.Web/Web.config`
+    - `legacy-src/dotnet-bookcatalog/shared-legacy-app/src/BookCatalog.Web/Views/Shared/`:
     **new** files only. The existing `_Layout.cshtml` must not change.
-  - `legacy-src/dotnet-bookcatalog/shared-legacy-app/src/BookCatalog.Web/BookCatalog.Web.csproj`:
+    - `legacy-src/dotnet-bookcatalog/shared-legacy-app/src/BookCatalog.Web/BookCatalog.Web.csproj`:
     only added `<Content Include="Views\Shared\..." />` items for the new files.
 - **Primary validation command:** run
   `msbuild BookCatalog.sln -restore -p:Configuration=Release` from the source
@@ -93,10 +93,10 @@ Affected people:
 - **Dependencies:** add no NuGet package, assembly reference, binding redirect,
   or `packages/` change.
 - **Data and security:**
-  - Do not add secrets or real data.
-  - Error pages must not read the database, the model, `ViewBag`, request
+    - Do not add secrets or real data.
+    - Error pages must not read the database, the model, `ViewBag`, request
     headers, query values, or exception data.
-  - Add no logging or telemetry (decision D4).
+    - Add no logging or telemetry (decision D4).
 
 ### Exclusions (out of scope)
 
@@ -265,15 +265,15 @@ diagnostic-marker search for each probe.
 ### Evidence
 
 - **Current behavior:**
-  - `src/BookCatalog.Web/Web.config` sets `customErrors mode="Off"` and
+    - `src/BookCatalog.Web/Web.config` sets `customErrors mode="Off"` and
     `compilation debug="true"`.
-  - `src/BookCatalog.Web/App_Start/FilterConfig.cs:RegisterGlobalFilters`
+    - `src/BookCatalog.Web/App_Start/FilterConfig.cs:RegisterGlobalFilters`
     adds `HandleErrorAttribute`, but no `Error` view exists.
-  - `src/BookCatalog.Web/Controllers/BooksController.cs:Details/Edit/Delete`
+    - `src/BookCatalog.Web/Controllers/BooksController.cs:Details/Edit/Delete`
     return `HttpNotFound()`.
-  - `src/BookCatalog.Web/App_Start/RouteConfig.cs:RegisterRoutes` defines a
+    - `src/BookCatalog.Web/App_Start/RouteConfig.cs:RegisterRoutes` defines a
     single default route.
-  - `src/BookCatalog.Web/Views/Web.config` blocks direct requests to
+    - `src/BookCatalog.Web/Views/Web.config` blocks direct requests to
     `Views/`.
 - **Existing tests:** None found. The solution has no test project
   (`legacy-src/dotnet-bookcatalog/AGENTS.md`).
