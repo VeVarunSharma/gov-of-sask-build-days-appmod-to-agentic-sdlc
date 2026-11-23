@@ -25,6 +25,25 @@ public class InMemoryWorkItemRepositoryTests
     }
 
     [Fact]
+    public void GetAllReturnsItemsOrderedByCreationTime()
+    {
+        var clock = new StubTimeProvider(new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero));
+        var repository = new InMemoryWorkItemRepository(clock);
+
+        var first = repository.Create(new WorkItemRequest("First", null, WorkItemStatus.Todo));
+        clock.UtcNow = clock.UtcNow.AddMinutes(1);
+        var second = repository.Create(new WorkItemRequest("Second", null, WorkItemStatus.Todo));
+        clock.UtcNow = clock.UtcNow.AddMinutes(1);
+        var third = repository.Create(new WorkItemRequest("Third", null, WorkItemStatus.Todo));
+        clock.UtcNow = clock.UtcNow.AddMinutes(1);
+        repository.Update(first.Id, new WorkItemRequest("First", "Updated", WorkItemStatus.Done));
+
+        var ids = repository.GetAll().Select(item => item.Id).ToArray();
+
+        Assert.Equal(new[] { first.Id, second.Id, third.Id }, ids);
+    }
+
+    [Fact]
     public void DeleteReturnsFalseForUnknownItem()
     {
         var repository = new InMemoryWorkItemRepository();
