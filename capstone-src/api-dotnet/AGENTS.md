@@ -30,6 +30,8 @@ build and tests are the configured local gate.
 
 - Preserve nullable-reference settings, thin endpoints, explicit validation,
   and deterministic repository behavior. In-memory data resets on restart.
+- Preserve `GetAll()` creation-time ordering as specified by
+  `../contracts/openapi.yml`.
 - Do not edit generated `bin/` or `obj/` content or commit logs, credentials,
   tokens, connection strings, production data, or participant data.
 - Keep secrets out of `appsettings*.json`. Configure URLs through
