@@ -118,7 +118,7 @@ Affected people:
 | Normal | Create, Edit, or Delete a valid book | Same redirects and persisted results as today. |
 | Normal | POST Create with an empty Title | The form is shown again with inline validation messages, not an error page. |
 | Failure | Unhandled exception, e.g. `GET /Books/Details/abc` | HTTP 500 and the generic page, with no diagnostic detail. |
-| Failure | LocalDB stopped during a catalog request | HTTP 500 and the generic page. The page renders without database access. |
+| Failure | The task-owned LocalDB database in a disposable app copy is unavailable during a catalog request | HTTP 500 and the generic page. The page renders without database access. |
 | Failure | POST Edit without an anti-forgery token | HTTP 500 and the generic page, with no diagnostic detail. |
 | Failure | The error page itself cannot render | No detailed output. Treat this as a stop condition. |
 | Boundary | `GET /Books/Details/999999` (id does not exist) | HTTP 404 and the generic not-found page. |
@@ -180,12 +180,19 @@ diagnostic-marker search for each probe.
 
 ### AC-6: The error page does not need the database
 
-- **Given** the app has started, and then the LocalDB instance is stopped with
-  `sqllocaldb stop MSSQLLocalDB`
-- **When** a user requests `/Books`
+- **Given** a disposable copy of the app is configured to use a task-owned
+  LocalDB instance and synthetic data only
+- **When** the task-owned database becomes unavailable and a user requests
+  `/Books`
 - **Then** the status is 500 and the generic page renders with no diagnostic
-  markers
-- **Verification:** HTTP probe, then restart with `sqllocaldb start MSSQLLocalDB`.
+  markers.
+- **Verification:** In the disposable app copy only, set its temporary
+  connection string to the task-owned instance and populate it with synthetic
+  data. Confirm the app is not using the configured shared `MSSQLLocalDB`
+  instance before making the task-owned database unavailable. Record the
+  isolation method, instance name, HTTP status, and response. Never connect to
+  or stop a live or shared database. If the task-owned instance cannot be
+  isolated and identified, do not run this check.
 
 ### AC-7: Normal catalog behavior is preserved
 
@@ -215,12 +222,19 @@ diagnostic-marker search for each probe.
 
 ### AC-10: Diff stays in scope
 
-- **Given** the implementation branch
-- **When** `git diff --name-only main...HEAD` runs
-- **Then** only allowed paths appear. The csproj diff contains only added
-  `Content Include` items for the new `Views/Shared/` files. No generated
-  `App_Data` database files are committed.
-- **Verification:** Command output and diff review.
+- **Given** an implementation branch containing the approved specification
+  commit identified in the issue's human review record
+- **When** a reviewer compares that commit with the implementation branch and
+  inspects staged, unstaged, and untracked changes
+- **Then** only allowed implementation paths appear. The csproj diff contains
+  only added `Content Include` items for the new `Views/Shared/` files. No
+  generated `App_Data` database files are committed.
+- **Verification:** Set `$approvedSpecCommit` to the approved commit SHA from
+  the issue. Verify it is an ancestor with
+  `git merge-base --is-ancestor $approvedSpecCommit HEAD`; stop if it is not.
+  Review `git diff --name-only $approvedSpecCommit HEAD`,
+  `git diff --name-only`, `git diff --cached --name-only`, and
+  `git status --short --untracked-files=all`, along with the actual diffs.
 
 ## Non-functional requirements
 
@@ -238,6 +252,7 @@ diagnostic-marker search for each probe.
 | `/Books/Details/abc` raises an unhandled exception (non-nullable `int id` binding), which gives a no-code 500 trigger. | Assumption | Confirm before changes, when collecting implementation baseline evidence. If it does not produce a 500, stop and pick a different documented trigger with reviewer approval. |
 | MVC `HandleErrorAttribute` covers unhandled exceptions only. `HttpNotFound()` and unmatched URLs need a separate mechanism within the allowed paths. | Risk | Stop if the 404 requirements cannot be met without changing a disallowed path. |
 | `Views/Web.config` registers `BlockViewHandler` for every path under `Views/`, so files there cannot be requested directly. | Risk | The chosen mechanism must work with this. Stop rather than edit `Views/Web.config` or move files outside the allowed paths. |
+| The configured `MSSQLLocalDB` instance may be shared with other work. | Risk | The owner approved a disposable app copy with a temporary connection string to a task-owned LocalDB instance, without accessing the live database (2026-11-23). Never connect to or stop the shared instance for AC-6. |
 | Running the app creates `App_Data\BookCatalog.mdf`, which is not covered by `.gitignore`. | Risk | Never commit, hand-edit, or pre-create MDF/LDF files (`legacy-src/dotnet-bookcatalog/AGENTS.md`). Confirm this with AC-10. |
 | Turning off debug compilation also affects local F5 debugging, because there is no config transform. | Accepted risk | Accepted by the owner (decision D5). Developers can still debug by temporarily changing the setting locally. That temporary edit must not be committed. |
 | Visual Studio MSBuild, the .NET Framework 4.8 targeting pack, IIS Express, and SQL Server LocalDB are available. | Dependency | Observed for the build. Confirm IIS Express and LocalDB before the AC HTTP checks. |
@@ -279,11 +294,18 @@ diagnostic-marker search for each probe.
 | D6 | Editable: `Web.config`, new files in `Views/Shared/`, and csproj `Content Include` additions only. |
 | D7 | Keep the original status codes, with no redirect. |
 | D8 | The build is the primary gate. The IIS Express + LocalDB HTTP checks are required supplemental evidence. |
+| D9 | AC-6 may use a disposable app copy and a task-owned LocalDB instance with a temporary connection string, without accessing the live database. Approved by @mahmedGos on 2026-11-23. |
 
 ### Unresolved questions
 
-- None. Runtime confirmation of the `/Books/Details/abc` 500 trigger is a
-  baseline step covered by a stop condition, not an open scope decision.
+- None.
+
+### Pre-implementation evidence check
+
+- Confirm that `/Books/Details/abc` produces an unhandled 500 using a
+  disposable app copy and synthetic data before implementation. If it does
+  not, stop and request reviewer guidance rather than selecting another
+  trigger.
 
 ### Boundary and validation review
 
@@ -315,9 +337,13 @@ Stop and request human guidance if:
   after them;
 - Visual Studio MSBuild, IIS Express, or LocalDB is unavailable, so required
   evidence cannot be collected (record the exact missing prerequisite);
+- the disposable AC-6 app copy cannot be verified as using only its task-owned
+  LocalDB instance and synthetic data;
 - a secret, credential, real data, Azure or production resource, package or
-  reference change, connection-string change, or destructive database action
-  is required (for example deleting the MDF or forcing re-creation); or
+  reference change, committed connection-string change, or destructive
+  database action is required (for example deleting an MDF or forcing
+  re-creation). The temporary connection-string change in the disposable
+  AC-6 app copy is the only approved exception; or
 - implementation or validation cannot satisfy the acceptance criteria without
   expanding the approved contract.
 
