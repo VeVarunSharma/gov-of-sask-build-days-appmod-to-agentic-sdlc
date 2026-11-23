@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Owner:** @mahmedGos (Lab 01, .NET track)
-- **Status:** Draft
+- **Status:** Approved
 - **Source root:** `legacy-src/dotnet-bookcatalog/shared-legacy-app`
 - **Related issue:** Not created
 
@@ -352,15 +352,15 @@ Stop and request human guidance if:
 
 ### Human approval
 
-- [ ] I reviewed the evidence, unresolved questions, allowed paths, acceptance
+- [x] I reviewed the evidence, unresolved questions, allowed paths, acceptance
       criteria, validation command, exclusions, risks, and stop conditions.
-- **Reviewer:** Pending review
-- **Approval date:** Pending review
-- **Approved specification commit:** Pending review
+- **Reviewer:** @mahmedGos
+- **Approval date:** 2026-11-23
+- **Approved specification commit:** `314588995a50569e6451ada56f10f843589e9f7c`
 
 The previous specification revision at
 `783d891545c4fffebaa38360018bc4bb4810ba95` was recorded as reviewed by
-@mahmedGos on 2026-11-23. This AC-10 revision requires a new review.
+@mahmedGos on 2026-11-23. This AC-10 revision was approved on 2026-11-23.
 
 Change **Status** to `Approved` only after the checkbox is selected and the
 reviewer, date, and commit fields are complete. Planning approval authorizes
